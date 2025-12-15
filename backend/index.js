@@ -14,11 +14,11 @@ app.get('/', (req, res) => {
 });
 
 //Work for database
-const todoSchema = new mongoose.Schema({title: {type: String, required: true}, time: {type: String, required: true}});
+const todoSchema = new mongoose.Schema({work: {type: String, required: true}, time: {type: String, required: true}});
 const Todo = mongoose.model("Todo", todoSchema);
 
 //Zod Schema
-const todoSchemaZod = z.object({title: z.string().min(3), time: z.string()});
+const todoSchemaZod = z.object({work: z.string().min(3), time: z.string()});
 
 
 
@@ -37,13 +37,13 @@ app.get('/todos', async (req, res) => {
 //validate Schema
 app.post('/todos', async (req, res) => {
     try{
-        const {title, time} = req.body;
-        const result = todoSchemaZod.safeParse({title, time});
+        const {work, time} = req.body;
+        const result = todoSchemaZod.safeParse({work, time});
          if(!result.success){
             return res.status(401).json({msg: "Wrong input"});
         }   
         const newTodo = new Todo({
-            title, time,
+            work, time,
         })
         await newTodo.save();
         res.status(200).json({msg: "Todo Added Successfully"});
@@ -53,7 +53,38 @@ app.post('/todos', async (req, res) => {
     }
 });
 //2. Remove Todo
+app.delete('/todos/:id', async (req, res) => {
+    const id = req.params.id;
+    try{
+        const deleteTask = await Todo.findByIdAndDelete(id);
+        if(!deleteTask){
+            return res.status(404).json({msg: "Todo not found"});
+        }
+        res.status(200).json({msg: `id deleted: ${id}`});
+    }
+    catch(error){
+        console.log(error);
+    }
+})
 //3. Update Todo
+app.put("/todos/:id", async (req, res) => {
+    const id = req.params.id;
+    try{
+    const {work, time} = req.body;
+    const result = todoSchemaZod.safeParse({work, time});
+    if(!result.success){
+        return res.status(400).json({msg: "Invalid input"});
+    }
+    const updateTask = await Todo.findByIdAndUpdate(id, {work: work, time: time});
+    if(!updateTask){
+        return res.status(404).json({msg: "Id not found"});
+    }
+    res.status(200).json({msg: 'updated successfully'});
+    }
+    catch(error){
+        console.log(error);
+    }
+});
 //4. Update State
 
 app.listen(3000);
