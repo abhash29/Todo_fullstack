@@ -2,27 +2,21 @@ import { useState } from "react";
 import axios from "axios";
 
 function InputBox(){
-    const [work, setWork] = useState("");
-    const [time, setTime] = useState("");
-    const [refresh, setRefresh] = useState(false);
+  const [work, setWork] = useState("");
+  const [time, setTime] = useState("");
 
-    function handleChange(e) {
-    setWork(e.target.value);
-    }
-    function handleChange2(e) {
-    setTime(e.target.value);
-    }
+  
 
-    // Submit todo
+  // Submit todo
   async function handleSubmit() {
     try {
-      await axios.post("http://localhost:3000/todos", {
+      const res = await axios.post("http://localhost:3000/todos", {
         work,
         time,
       });
+      //refreshTodos();
       setWork("");
       setTime("");
-      setRefresh(prev => !prev);
     } catch (error) {
       console.log(error);
         }
@@ -36,14 +30,14 @@ function InputBox(){
           placeholder="Work"
           className="border px-2 py-1 rounded-md w-full"
           value={work}
-          onChange={handleChange}
+          onChange={e => setWork(e.target.value)}
         />
 
         <input
           type="time"
           className="border px-2 py-1 rounded-md"
           value={time}
-          onChange={handleChange2}
+          onChange={e => setTime(e.target.value)}
         />
 
         <button

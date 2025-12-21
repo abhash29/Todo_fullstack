@@ -1,61 +1,40 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Details from './Details';
+import { useRecoilState, useRecoilValue, useRecoilRefresher_UNSTABLE } from "recoil";
+import { todoAtom, todoQuery } from "../store/atoms/atoms";
 import { useNavigate } from "react-router-dom";
 
 function List(){
-    const [todos, setTodos] = useState([]);
+
+    //Atoms
+    const todos = useRecoilValue(todoQuery);
+    const [, setTodos] = useRecoilState(todoAtom);
     const [componentId, setComponentId] = useState("");
-    const [refresh, setRefresh] = useState(false);
-    const [done, setDone] = useState(false);
-    const [displayWork, setDisplayWork] = useState("");
-    const [displayTime, setDisplayTime] = useState("");
-    const [work, setWork] = useState("");
-    const [time, setTime] = useState("");
+    //const refreshTodos = useRecoilRefresher_UNSTABLE(todoQuery);
 
     const navigate = useNavigate();
 
-    // Fetch all todos (runs on refresh)
-    useEffect(() => {
-    const fetchTodos = async () => {
-      const res = await axios.get('http://localhost:3000/todos');
-      setTodos(res.data);
-    };
-    fetchTodos();
-  }, [refresh]);
 
-    // Update todo
-    function handleUpdate(componentId){
-      navigate("/updatePage", {componentId: componentId})
-    }
-
-    // Delete todo
+    //// Delete todo
       async function handleDelete(id) {
         try {
           await axios.delete(`http://localhost:3000/todos/${id}`);
-          setRefresh(prev => !prev);
+          setTodos(prev => prev.filter(todo => todo._id!==id));
+          //refreshTodos();
         } catch (error) {
           console.log(error);
         }
       }
+
+    // Fetch single todo
+    const displayTodo = todos.find(todo => todo._id===componentId);
+
+    // Update todo
+    function handleUpdate(id){
+      navigate(`/updatepage/${id}`);
+    }
     
-      // Fetch single todo
-    useEffect(() => {
-    if (!componentId) return;
-
-    const fetchOneTodo = async () => {
-      try {
-        const res = await axios.get(`http://localhost:3000/todos/${componentId}`);
-        setDisplayWork(res.data.work);
-        setDisplayTime(res.data.time);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchOneTodo();
-  }, [componentId]);
-
 
     return (
         <div className="border p-3 rounded-md text-center text-lg font-medium">
@@ -72,8 +51,7 @@ function List(){
 
             <button
               className="text-green-500 hover:text-white hover:bg-green-500 px-2 py-1 rounded"
-              onClick={handleUpdate(todo._id)}
-            >
+              onClick={(e) => {e.stopPropagation();  handleUpdate(todo._id);}}>
               Update
             </button>
 
@@ -91,8 +69,6 @@ function List(){
               <input
                 type="checkbox"
                 className="mr-2"
-                checked={done}
-                onChange={() => setDone(prev => !prev)}
               />
               Mark as done
             </label>
@@ -100,7 +76,7 @@ function List(){
         ))}
 
          {componentId && (
-        <Details work={displayWork} time={displayTime} />
+        <Details work={displayTodo.work} time={displayTodo.time} />
       )}
       </div>
     )
