@@ -1,4 +1,4 @@
-function Details({work, time}) {
+function Details({work, time, status}) {
   return (
     <div className="max-w-sm rounded-2xl bg-white p-5 shadow-lg transition hover:-translate-y-1 hover:shadow-xl mt-10">
       <h3 className="mb-4 border-b pb-2 text-lg font-semibold text-gray-800">
@@ -14,6 +14,9 @@ function Details({work, time}) {
         <span className="font-medium text-gray-600">Time:</span>
         <span className="text-gray-800">{time}</span>
       </div>
+       <div className="flex justify-between py-2" onClick={() => console.log("status update button")}>
+        <span className="text-gray-800">{status==true ? "Completed" : "Pending"}</span>
+        </div>
     </div>
   );
 }

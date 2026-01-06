@@ -1,53 +1,42 @@
-import { useRecoilState, useRecoilValue } from "recoil";
-import { todoAtom, todoQuery } from "../store/atoms/atoms";
 import { useNavigate, useParams } from "react-router-dom";
-import {  useEffect, useState } from "react";
-import { useMemo } from "react";
-import axios from "axios";
 import Details from "./Details";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 
 function UpdatePage(){
-    const {id} = useParams();
+    const navigate = useNavigate();
     const [work, setWork] = useState("");
     const [time, setTime] = useState("");
 
-    const navigate = useNavigate();
+    const [work2, setWork2] = useState("");
+    const [time2, setTime2] = useState("");
+    const [status, setStatus] = useState(false);
 
-    const todos = useRecoilValue(todoQuery);
-    const [, setTodos] = useRecoilState(todoAtom);
-
-
-    const displayTodos = useMemo(() => {
-      return todos.find(todo => todo._id===id);
-    }, [todos, id]);
-
+    const {id} = useParams();
+    console.log(id);
+    //single todo
     useEffect(() => {
-      if(displayTodos){
-        setWork(displayTodos.work);
-        setTime(displayTodos.time);
-      }
-    }, [displayTodos]);
+      async function fetchSingleTodo(id){
+      const result = await axios.get(`http://127.0.0.1:8787/todos/user/1/todo/${id}`)
+      console.log(result.data);
+      setWork(result.data.work);
+      setTime(result.data.time);
+      setStatus(result.data.status);
+     }
+     fetchSingleTodo(id);
+    }, [])
 
-
-
-    async function handleUpdate(id){
-      try{
-        const res =  await axios.put(`http://localhost:3000/todos/${id}`, {work, time});
-        setTodos((prev) => prev.map((todo) => todo._id===id?res.data:todo));
-        navigate("/component");
-      }
-      catch(error){
-        console.log(error);
-      }
-      }
-
-    if (!displayTodos) {
-    // Show loading state until todo is ready
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-
-    
+    //update
+    async function handleUpdate(){
+      const result = await axios.put(`http://127.0.0.1:8787/todos/${id}`, {
+        work: work2, time: time2
+      })
+      setWork2("");
+      setTime2("");
+      navigate('/component')
+      console.log(result);
+    }
     
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -58,14 +47,14 @@ function UpdatePage(){
         </h1>
 
         <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm space-y-4">
-          <input type="text" placeholder="Work" value={work} onChange={e => setWork(e.target.value)} className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"/>
-          <input type="time" value={time} onChange={e => setTime(e.target.value)} className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"/>
-          <button onClick={() => handleUpdate(id)} className="w-full bg-blue-600 text-white font-medium py-2 rounded-md hover:bg-blue-700 transition-colors">Update</button>
+          <input type="text" placeholder="Work" value={work2} onChange = {((e) => setWork2(e.target.value))} className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+          <input type="time"  value={time2} onChange = {((e) => setTime2(e.target.value))} className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+          <button onClick={handleUpdate} className="w-full bg-blue-600 text-white font-medium py-2 rounded-md hover:bg-blue-700 transition-colors">Update</button>
         </div>
 
 
         <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-          <Details work={displayTodos.work} time={displayTodos.time} />
+          <Details work={work} time={time} status={status} />
         </div>
 
       </div>

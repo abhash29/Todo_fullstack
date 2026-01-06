@@ -1,26 +1,19 @@
 import { useState } from "react";
 import axios from "axios";
 
+
 function InputBox(){
   const [work, setWork] = useState("");
   const [time, setTime] = useState("");
 
-  
-
-  // Submit todo
-  async function handleSubmit() {
-    try {
-      const res = await axios.post("http://localhost:3000/todos", {
-        work,
-        time,
-      });
-      //refreshTodos();
-      setWork("");
-      setTime("");
-    } catch (error) {
-      console.log(error);
-        }
-    }
+  async function handleSubmit(){
+    const result = await axios.post("http://127.0.0.1:8787/todos", {
+      work, time, user_id: 1
+    })
+    setWork("");
+    setTime("");
+    console.log(result);
+  }
 
     return (
         <>

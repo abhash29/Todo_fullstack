@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "skipLibCheck": true,
+
+    "lib": ["ESNext"],
+    "types": ["node"],
+
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+
+    // NEW: Output folder for compiled JS
+    "outDir": "dist",
+
+    // NEW: Keep folder structure
+    "rootDir": "src",
+
+    // Optional: include source maps
+    "sourceMap": true
+  },
+  "include": ["src"]
+}
