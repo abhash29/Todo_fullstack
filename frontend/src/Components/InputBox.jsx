@@ -1,14 +1,22 @@
 import { useState } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 
 function InputBox(){
   const [work, setWork] = useState("");
   const [time, setTime] = useState("");
+  const {id} = useParams();
 
+  const token = localStorage.getItem("token");
+  console.log(id);
   async function handleSubmit(){
     const result = await axios.post("http://127.0.0.1:8787/todos", {
-      work, time, user_id: 1
+      work, time, user_id: Number(id)
+    }, {
+      headers: {
+          Authorization: `Bearer ${token}`
+        }
     })
     setWork("");
     setTime("");

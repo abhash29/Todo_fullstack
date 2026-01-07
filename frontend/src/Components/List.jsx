@@ -1,19 +1,26 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Details from './Details';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function List(){
     //Get all the list
+    const {id} = useParams();
     const [todos, setTodo] = useState([]);
     const [work, setWork] = useState("");
     const [time, setTime] = useState("");
     const [status, setStatus] = useState(false);
     const [clicked, setClicked] = useState(false);
 
+    const token = localStorage.getItem("token");
+
     useEffect( () => {
       const fetchTodos = async() => {
-      const result  = await axios.get('http://127.0.0.1:8787/todos/user/1');
+      const result  = await axios.get(`http://127.0.0.1:8787/todos/user/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setTodo(result.data);
       console.log(result.data);
       }
@@ -22,14 +29,22 @@ function List(){
 
     //delete
     async function handleDelete(id){
-      const result = await axios.delete(`http://127.0.0.1:8787/todos/${id}`);
+      const result = await axios.delete(`http://127.0.0.1:8787/todos/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log("deleted ", id);
       setTodo(prevTodos => prevTodos.filter(todo => todo.id !== id));
     }
 
     //single todo
-     async function fetchSingleTodo(id){
-      const result = await axios.get(`http://127.0.0.1:8787/todos/user/1/todo/${id}`)
+     async function fetchSingleTodo(id2){
+      const result = await axios.get(`http://127.0.0.1:8787/todos/user/${id}/todo/${id2}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       console.log(result.data);
       setWork(result.data.work);
       setTime(result.data.time);
@@ -39,16 +54,22 @@ function List(){
     const navigate = useNavigate();
 
     // Update todo
-    function handleUpdate(id){
-      navigate(`/updatepage/${id}`);
+    function handleUpdate(id2){
+      navigate(`/updatepage/${id}/${id2}`);
     }
 
     //status update
     async function handleStatusUpdate(todoId, currentStatus) {
       const newStatus = !currentStatus;
-      const result = await axios.put(`http://127.0.0.1:8787/todos/${todoId}`, {
+      const result = await axios.put(`http://127.0.0.1:8787/todos/${todoId}, `, {
         status: newStatus
-      });
+      }, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
 
       setTodo(prevTodos =>
         prevTodos.map(todo =>

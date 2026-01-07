@@ -14,11 +14,19 @@ function UpdatePage(){
     const [status, setStatus] = useState(false);
 
     const {id} = useParams();
+    const {id2} = useParams();
     console.log(id);
+    console.log(id2);
+
+    const token = localStorage.getItem("token");
     //single todo
     useEffect(() => {
       async function fetchSingleTodo(id){
-      const result = await axios.get(`http://127.0.0.1:8787/todos/user/1/todo/${id}`)
+      const result = await axios.get(`http://127.0.0.1:8787/todos/user/${id}/todo/${id2}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       console.log(result.data);
       setWork(result.data.work);
       setTime(result.data.time);
@@ -34,7 +42,7 @@ function UpdatePage(){
       })
       setWork2("");
       setTime2("");
-      navigate('/component')
+      navigate(`/component/${id}`)
       console.log(result);
     }
     
