@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Details from './Details';
 import { useNavigate, useParams } from "react-router-dom";
+import Loader from "./Loader";
+import InputBox from "./InputBox";
+
 
 function List(){
     //Get all the list
@@ -11,6 +14,7 @@ function List(){
     const [time, setTime] = useState("");
     const [status, setStatus] = useState(false);
     const [clicked, setClicked] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const token = localStorage.getItem("token");
 
@@ -22,10 +26,11 @@ function List(){
         }
       });
       setTodo(result.data);
+      setLoading(false);
       console.log(result.data);
       }
       fetchTodos();
-    }, []);
+    }, [id]);
 
     //delete
     async function handleDelete(id){
@@ -61,7 +66,7 @@ function List(){
     //status update
     async function handleStatusUpdate(todoId, currentStatus) {
       const newStatus = !currentStatus;
-      const result = await axios.put(`http://127.0.0.1:8787/todos/${todoId}, `, {
+      const result = await axios.put(`http://127.0.0.1:8787/todos/${todoId}`, {
         status: newStatus
       }, 
       {
@@ -79,10 +84,11 @@ function List(){
 
       console.log(result);
     }
-
+    if(loading) return <Loader />
     return (
         <div className="border p-3 rounded-md text-center text-lg font-medium">
         <div>List</div>
+        <InputBox setTodo={setTodo} todos={todos} />
 
         {todos.map((todo) => (
           <div

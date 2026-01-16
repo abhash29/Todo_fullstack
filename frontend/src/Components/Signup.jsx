@@ -65,7 +65,7 @@ function Signup() {
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
           />
 
-          <button className="bg-black text-white py-2 rounded-md hover:bg-gray-800 transition"
+          <button className="bg-black text-white py-2 rounded-md hover:bg-gray-800 transition cursor-pointer"
             onClick={handleSubmit}
           >
             Submit

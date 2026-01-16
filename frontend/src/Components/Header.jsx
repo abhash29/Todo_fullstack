@@ -36,7 +36,7 @@ function Header() {
         </div>
         <button
           onClick={() => navigate('/login')}
-          className="px-2 py-1 text-sm bg-white text-blue-600 rounded hover:bg-gray-100 transition"
+          className="px-2 py-1 text-sm bg-red-600 text-black-600 rounded hover:bg-red-800 transition cursor-pointer"
         >
           Logout
         </button>

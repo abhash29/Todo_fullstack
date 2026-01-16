@@ -58,7 +58,7 @@ createTable();
 const userSchema = z.object({username: z.email(), password: z.string().min(3), firstName: z.string(), lastName: z.string().optional()});
 const todoSchemaZod = z.object({work: z.string().min(3), time: z.string(), status: z.boolean().default(false), user_id: z.number()});
 const updateTodoSchema = z.object({work: z.string().min(3).optional(), time: z.string().optional(), status: z.boolean().default(false).optional(), user_id: z.number().optional()});
-const loginSchema = z.object({email: z.email(), password: z.string()})
+const loginSchema = z.object({username: z.email(), password: z.string()})
 
 //Middlware -> check token ko
 const authMiddleware = async (c:Context, next:Next) => {
@@ -104,7 +104,7 @@ app.post('/signup', async (c) => {
 })
 
 //login
-app.put('/login', async (c) => {
+app.post('/login', async (c) => {
   const {username, password} = await c.req.json();
   const result =  loginSchema.safeParse({username, password});
   if(!result.success){
